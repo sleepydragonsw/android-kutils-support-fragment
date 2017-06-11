@@ -1,0 +1,99 @@
+task wrapper(type: Wrapper) {
+    gradleVersion = "3.5"
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+buildscript {
+    ext.kotlin_version = "1.1.2-3"
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:2.3.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.github.dcendents:android-maven-gradle-plugin:1.5"
+        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.14"
+    }
+}
+
+repositories {
+    jcenter()
+    maven {
+        url "https://maven.google.com"
+    }
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+apply plugin: "org.jetbrains.dokka"
+apply plugin: "com.github.dcendents.android-maven"
+
+group = "org.sleepydragon"
+version = "1.0.0-dev"
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.3"
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 25
+        versionCode 1
+        versionName version
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    dexOptions {
+        javaMaxHeapSize "3g"
+    }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "com.android.support:support-fragment:25.4.0"
+    compile "org.sleepydragon:android-kutils:1.0.0"
+
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:2.8.9"
+    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+}
+
+dokka {
+    outputFormat = "html"
+    outputDirectory = "$buildDir/dokka/kdoc"
+    sourceDirs = files("src/main/java")
+
+    linkMapping {
+        dir = file("src/main/java").absolutePath
+        url = "https://github.com/sleepydragonsw/android-kutils-support-fragment/blob/master/src/main/java"
+        suffix = "#L"
+    }
+}
+
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = "javadoc"
+    outputDirectory = "$buildDir/dokka/javadoc"
+    sourceDirs = files("src/main/java")
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = "sources"
+}
+
+task javadocJar(type: Jar, dependsOn: dokkaJavadoc) {
+    classifier = "javadoc"
+    from dokkaJavadoc.outputDirectory
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}

@@ -32,7 +32,7 @@ apply plugin: "org.jetbrains.dokka"
 apply plugin: "com.github.dcendents.android-maven"
 
 group = "org.sleepydragon"
-version = "1.0.0-dev"
+version = "1.0.0"
 
 android {
     compileSdkVersion 25
